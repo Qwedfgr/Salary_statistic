@@ -57,8 +57,8 @@ def get_vacancies_page(language, page = 0):
         'search_period': '',
         'page': page
     }
-    r = requests.get(url=url, params=params)
-    return r.json()
+    response = requests.get(url=url, params=params)
+    return response.json()
 
 
 
