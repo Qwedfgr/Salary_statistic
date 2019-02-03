@@ -35,10 +35,7 @@ def get_statistic_salary(found_vacancies, sum_salary=0, vacancies_processed=0):
 
 
 def get_stat_salary_sj(languages):
-    vacancies = []
-    for language in languages:
-        vacancies.append([language, *get_language_stat(language)])
-    return vacancies
+    return [[language, *get_language_stat(language)] for language in languages]
 
 
 def get_vacancies_page(language, page=0):

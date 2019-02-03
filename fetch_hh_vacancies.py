@@ -4,10 +4,7 @@ import calculation_salary
 
 
 def get_stat_salary_hh(languages):
-    vacancies = []
-    for language in languages:
-        vacancies.append([language, *get_language_stat(language)])
-    return vacancies
+    return [[language, *get_language_stat(language)] for language in languages]
 
 
 def get_language_stat(language):
