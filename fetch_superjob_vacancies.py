@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 
 load_dotenv()
-token = os.getenv('TOKEN')
+TOKEN = os.getenv('TOKEN')
 
 
 def predict_rub_salary(vacancy):
@@ -56,10 +56,10 @@ def get_stat_salary_sj(languages):
     return vacancies
 
 
-def get_vacancies_page(language, page = 0):
-    url = '	https://api.superjob.ru/2.0/vacancies/'
+def get_vacancies_page(language, page=0):
+    url = 'https://api.superjob.ru/2.0/vacancies/'
     headers = {
-        'X-Api-App-Id': token
+        'X-Api-App-Id': TOKEN
     }
     params = {
         'town': 4,  # Москва
@@ -69,5 +69,6 @@ def get_vacancies_page(language, page = 0):
         'no_agreement': 0,
         'page': page
     }
-    r = requests.get(url=url, params=params, headers=headers)
-    return r.json()
+    response = requests.get(url=url, params=params, headers=headers)
+    return response.json()
+

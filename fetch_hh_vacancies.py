@@ -53,7 +53,7 @@ def get_vacancies_page(language, page = 0):
     url = 'https://api.hh.ru/vacancies/'
     params = {
         'text': 'Программист {}'.format(language),
-        'area': 2,  # Москва
+        'area': 1,  # Москва
         'search_period': '',
         'page': page
     }

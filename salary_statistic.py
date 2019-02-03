@@ -2,7 +2,7 @@ from terminaltables import DoubleTable
 from fetch_hh_vacancies import get_stat_salary_hh
 from fetch_superjob_vacancies import get_stat_salary_sj
 
-languages = [
+LANGUAGES = [
     '1с',
     'python',
     'go',
@@ -27,10 +27,10 @@ def print_table(title, data):
 
 def main():
     title = 'SuperJob Москва'
-    print_table(title, get_stat_salary_sj(languages))
+    print_table(title, get_stat_salary_sj(LANGUAGES))
 
     title = 'HH Москва'
-    print_table(title, get_stat_salary_hh(languages))
+    print_table(title, get_stat_salary_hh(LANGUAGES))
 
 
 if __name__ == '__main__':
