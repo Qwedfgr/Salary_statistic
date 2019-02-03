@@ -1,26 +1,11 @@
 # -*- coding: utf-8 -*-
 import requests
 import os
+import calculation_salary
 from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
-
-
-def predict_rub_salary(vacancy):
-    if not vacancy['currency'] == 'rub':
-        return None
-    if vacancy['payment']:
-        salary = vacancy['payment']
-    elif vacancy['payment_from'] and vacancy['payment_to']:
-        salary = (vacancy['payment_from'] + vacancy['payment_to']) / 2
-    elif vacancy['payment_from']:
-        salary = vacancy['payment_from'] * 1.2
-    elif vacancy['payment_to']:
-        salary = vacancy['payment_to'] * 0.8
-    else:
-        salary = None
-    return salary
 
 
 def get_language_stat(language):
@@ -42,7 +27,7 @@ def get_language_stat(language):
 
 def get_statistic_salary(found_vacancies, sum_salary=0, vacancies_processed=0):
     for vacancy in found_vacancies:
-        predict_salary = predict_rub_salary(vacancy)
+        predict_salary = calculation_salary.predict_rub_salary(vacancy['payment_from'], vacancy['payment_to'])
         if predict_salary is not None:
             vacancies_processed += 1
             sum_salary += predict_salary
@@ -66,6 +51,7 @@ def get_vacancies_page(language, page=0):
         'catalogues': 48,  # Разработка, программирование
         'count': 150,
         'keyword': language,
+        'currency': 'rub',
         'no_agreement': 0,
         'page': page
     }

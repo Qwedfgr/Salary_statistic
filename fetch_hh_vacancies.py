@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
+import calculation_salary
 
 
 def get_stat_salary_hh(languages):
@@ -23,26 +24,9 @@ def get_language_stat(language):
     return total_vacancies, vacancies_processed, average_salary
 
 
-def predict_rub_salary(vacancy):
-    salary = vacancy['salary']
-    if salary is None\
-            or salary['currency'] != 'RUR':
-        return None
-    if not salary['from'] is None\
-            and not salary['to'] is None:
-        sal = (salary['from'] + salary['to'])/2
-    elif not salary['from'] is None:
-        sal = salary['from'] * 1.2
-    elif not salary['to'] is None:
-        sal = salary['to'] * 0.8
-    else:
-        sal = None
-    return sal
-
-
 def get_statistic_salary(found_vacancies, sum_salary=0, vacancies_processed=0):
     for vacancy in found_vacancies:
-        predict_salary = predict_rub_salary(vacancy)
+        predict_salary = calculation_salary.predict_rub_salary(vacancy['salary']['from'], vacancy['salary']['to'])
         if predict_salary is not None:
             vacancies_processed += 1
             sum_salary += predict_salary
@@ -55,6 +39,7 @@ def get_vacancies_page(language, page = 0):
         'text': 'Программист {}'.format(language),
         'area': 1,  # Москва
         'search_period': '',
+        'currency': 'RUR',
         'page': page
     }
     response = requests.get(url=url, params=params)
