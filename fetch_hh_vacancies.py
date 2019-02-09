@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import requests
-import calculation_salary
+import calculation_salary as cs
 
 
 def get_stat_salary_hh(languages):
@@ -8,29 +8,38 @@ def get_stat_salary_hh(languages):
 
 
 def get_language_stat(language):
-    json_vacancies = get_vacancies_page(language, 0)
-    total_vacancies = json_vacancies['found']
-    found_vacancies = json_vacancies['items']
-    pages = json_vacancies['pages']
-    vacancies_processed = 0
-    sum_salary = 0
-    for page in range(pages):
-        vacancies_processed, sum_salary = get_statistic_salary(found_vacancies, sum_salary, vacancies_processed)
-        found_vacancies = get_vacancies_page(language, page+1)['items']
-    average_salary = int(sum_salary/vacancies_processed)
+    page = pages_number = 1
+    found_vacancies = []
+    while page <= pages_number:
+        page_data = get_vacancies_page(language, page)
+        page += 1
+        if page_data is not None:
+            pages_number = page_data['pages']
+            vacancies_of_page = page_data['items']
+            total_vacancies = page_data['found']
+            for vacancy in vacancies_of_page:
+                found_vacancies.append(vacancy['salary'])
+    vacancies_processed, average_salary = get_statistic_salary(found_vacancies)
     return total_vacancies, vacancies_processed, average_salary
 
 
-def get_statistic_salary(found_vacancies, sum_salary=0, vacancies_processed=0):
+def get_statistic_salary(found_vacancies):
+    vacancies_processed = 0
+    sum_salary = 0
     for vacancy in found_vacancies:
-        predict_salary = calculation_salary.predict_rub_salary(vacancy['salary']['from'], vacancy['salary']['to'])
-        if predict_salary is not None:
-            vacancies_processed += 1
-            sum_salary += predict_salary
-    return vacancies_processed, sum_salary
+        if vacancy is not None:
+            predict_salary = cs.predict_rub_salary(vacancy['from'], vacancy['to'])
+            if predict_salary is not None:
+                vacancies_processed += 1
+                sum_salary += predict_salary
+    if vacancies_processed:
+        average_salary = int(sum_salary / vacancies_processed)
+    else:
+        average_salary = 0
+    return vacancies_processed, average_salary
 
 
-def get_vacancies_page(language, page = 0):
+def get_vacancies_page(language, page=0):
     url = 'https://api.hh.ru/vacancies/'
     params = {
         'text': 'Программист {}'.format(language),
@@ -40,7 +49,10 @@ def get_vacancies_page(language, page = 0):
         'page': page
     }
     response = requests.get(url=url, params=params)
-    return response.json()
+    if response.ok:
+        return response.json()
+    else:
+        return None
 
 
 
